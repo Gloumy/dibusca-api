@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -19,10 +20,6 @@ namespace dibusca_api
     public Startup(IConfiguration configuration)
     {
       Configuration = configuration;
-      using (var db = new AppDbContext())
-      {
-        db.Database.EnsureCreated();
-      }
     }
 
     public IConfiguration Configuration { get; }
@@ -30,6 +27,7 @@ namespace dibusca_api
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
+      services.AddDbContext<AppDbContext>(options => options.UseSqlServer("Server=localhost;Database=dibusca;user id=SA;password=pwdM$SQLS3rver;persist security info=True;MultipleActiveResultSets=true"));
       services.AddControllers();
     }
 

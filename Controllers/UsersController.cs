@@ -10,12 +10,13 @@ using dibusca_api.Models;
 using Microsoft.AspNetCore.Identity;
 using dibusca_api.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace dibusca_api
 {
   [Route("api/[controller]")]
   [ApiController]
-  [Authorize]
+  [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
   public class UsersController : ControllerBase
   {
     private readonly AppDbContext _context;

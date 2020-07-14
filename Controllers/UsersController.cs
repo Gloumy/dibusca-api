@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using dibusca_api.Entities;
+using dibusca_api.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace dibusca_api
 {
@@ -77,8 +79,24 @@ namespace dibusca_api
     // To protect from overposting attacks, enable the specific properties you want to bind to, for
     // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
     [HttpPost]
-    public async Task<ActionResult<User>> PostUser(User user)
+    public async Task<ActionResult<User>> PostUser(UserCredentials userCredentials)
     {
+      var existingUser = _context.Users.FirstOrDefault(u => u.Email == userCredentials.Email);
+
+      if (existingUser != null)
+      {
+        return BadRequest("Email already in use");
+      }
+
+      var user = new User
+      {
+        Email = userCredentials.Email,
+        Password = userCredentials.Password
+      };
+      var passwordHasher = new PasswordHasher<User>();
+
+      user.Password = passwordHasher.HashPassword(user, user.Password);
+
       _context.Users.Add(user);
       await _context.SaveChangesAsync();
 

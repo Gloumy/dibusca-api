@@ -8,18 +8,23 @@ using Microsoft.EntityFrameworkCore;
 using dibusca_api.Entities;
 using dibusca_api.Models;
 using Microsoft.AspNetCore.Identity;
+using dibusca_api.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace dibusca_api
 {
   [Route("api/[controller]")]
   [ApiController]
+  [Authorize]
   public class UsersController : ControllerBase
   {
     private readonly AppDbContext _context;
+    private readonly IUserService _userService;
 
-    public UsersController(AppDbContext context)
+    public UsersController(AppDbContext context, IUserService userService)
     {
       _context = context;
+      _userService = userService;
     }
 
     // GET: api/Users
@@ -78,6 +83,7 @@ namespace dibusca_api
     // POST: api/Users
     // To protect from overposting attacks, enable the specific properties you want to bind to, for
     // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+    [AllowAnonymous]
     [HttpPost]
     public async Task<ActionResult<User>> PostUser(UserCredentials userCredentials)
     {
@@ -101,6 +107,17 @@ namespace dibusca_api
       await _context.SaveChangesAsync();
 
       return CreatedAtAction("GetUser", new { id = user.Id }, user);
+    }
+
+    [AllowAnonymous]
+    [HttpPost("authenticate")]
+    public IActionResult Authenticate([FromBody] UserCredentials userCredentials)
+    {
+      var response = _userService.Authenticate(userCredentials);
+
+      if (response == null) return BadRequest(new { message = "Invalid credentials" });
+
+      return Ok(response);
     }
 
     // DELETE: api/Users/5

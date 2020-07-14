@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace dibusca_api.Models
+namespace dibusca_api.Entities
 {
   public class AppDbContext : DbContext
   {
